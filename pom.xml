@@ -26,6 +26,7 @@
         <module>orderservice</module>
         <module>PaymentService</module>
         <module>ShipmentService</module>
+		<module>UserService</module>
         <!-- Add more modules as needed -->
     </modules>
 
