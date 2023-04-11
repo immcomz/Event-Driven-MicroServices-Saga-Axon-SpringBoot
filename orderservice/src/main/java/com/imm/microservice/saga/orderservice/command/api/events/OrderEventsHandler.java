@@ -4,6 +4,8 @@ import org.axonframework.eventhandling.EventHandler;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
+import com.imm.microservice.saga.CommonService.events.OrderCancelledEvent;
+import com.imm.microservice.saga.CommonService.events.OrderCompletedEvent;
 import com.imm.microservice.saga.orderservice.command.api.data.Order;
 import com.imm.microservice.saga.orderservice.command.api.data.OrderRepository;
 
@@ -15,7 +17,7 @@ public class OrderEventsHandler {
     public OrderEventsHandler(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
     }
-
+    // copy the event data and save it in database
     @EventHandler
     public void on(OrderCreatedEvent event) {
         Order order = new Order();

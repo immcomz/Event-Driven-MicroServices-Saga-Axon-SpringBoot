@@ -10,10 +10,23 @@ import org.axonframework.queryhandling.QueryGateway;
 import org.axonframework.spring.stereotype.Saga;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.imm.microservice.saga.CommonService.commands.CancelOrderCommand;
+import com.imm.microservice.saga.CommonService.commands.CancelPaymentCommand;
+import com.imm.microservice.saga.CommonService.commands.CompleteOrderCommand;
+import com.imm.microservice.saga.CommonService.commands.ShipOrderCommand;
+import com.imm.microservice.saga.CommonService.commands.ValidatePaymentCommand;
+import com.imm.microservice.saga.CommonService.events.OrderCancelledEvent;
+import com.imm.microservice.saga.CommonService.events.OrderCompletedEvent;
+import com.imm.microservice.saga.CommonService.events.OrderShippedEvent;
+import com.imm.microservice.saga.CommonService.events.PaymentCancelledEvent;
+import com.imm.microservice.saga.CommonService.events.PaymentProcessedEvent;
+import com.imm.microservice.saga.CommonService.model.User;
+import com.imm.microservice.saga.CommonService.queries.GetUserPaymentDetailsQuery;
 import com.imm.microservice.saga.orderservice.command.api.events.OrderCreatedEvent;
 
 import java.util.UUID;
 
+//
 @Saga
 @Slf4j
 public class OrderProcessingSaga {
@@ -29,6 +42,8 @@ public class OrderProcessingSaga {
     }
 
     @StartSaga
+    //crete event handlers on saga aswell 
+    //orderID is primary key of order Repository
     @SagaEventHandler(associationProperty = "orderId")
     private void handle(OrderCreatedEvent event) {
         log.info("OrderCreatedEvent in Saga for Order Id : {}",
@@ -50,7 +65,7 @@ public class OrderProcessingSaga {
             //Start the Compensating transaction
             cancelOrderCommand(event.getOrderId());
         }
-
+        //Start the payment Validate Command inorder to process order event
         ValidatePaymentCommand validatePaymentCommand
                 = ValidatePaymentCommand
                 .builder()

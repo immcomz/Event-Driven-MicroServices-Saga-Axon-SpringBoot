@@ -7,6 +7,10 @@ import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.springframework.beans.BeanUtils;
 
+import com.imm.microservice.saga.CommonService.commands.CancelOrderCommand;
+import com.imm.microservice.saga.CommonService.commands.CompleteOrderCommand;
+import com.imm.microservice.saga.CommonService.events.OrderCancelledEvent;
+import com.imm.microservice.saga.CommonService.events.OrderCompletedEvent;
 import com.imm.microservice.saga.orderservice.command.api.command.CreateOrderCommand;
 import com.imm.microservice.saga.orderservice.command.api.events.OrderCreatedEvent;
 
@@ -50,15 +54,17 @@ public class OrderAggregate {
     @CommandHandler
     public void handle(CompleteOrderCommand completeOrderCommand) {
         //Validate The Command
-        // Publish Order Completed Event
+        // CREATE Event
         OrderCompletedEvent orderCompletedEvent
                 = OrderCompletedEvent.builder()
                 .orderStatus(completeOrderCommand.getOrderStatus())
                 .orderId(completeOrderCommand.getOrderId())
                 .build();
+                //Send to the Axon Server
         AggregateLifecycle.apply(orderCompletedEvent);
     }
 
+    //UPDATE the event details to Aggregrator
     @EventSourcingHandler
     public void on(OrderCompletedEvent event) {
         this.orderStatus = event.getOrderStatus();
